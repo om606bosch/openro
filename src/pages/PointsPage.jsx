@@ -1,5 +1,6 @@
-import React, { useState, useMemo, useEffect, useRef } from "react";
+import React, { useState, useMemo, useEffect, useRef, Fragment } from "react";
 import { certColor, roleColor, statusColor, fmtDate, certRank, canManageMatches, isAdmin, uid, inp, btnS, btnP, btnD, errInp, clubRoleColor, canManageClub, isClubPresident, docCatColor, docTypeColor, fmtFileSize } from "../lib/helpers";
+
 import { CERT_LEVELS, SYSTEM_ROLES, MATCH_LEVEL_POINTS, SEMINAR_INSTRUCTOR_POINTS, POINT_RULES, IPSC_DISCIPLINES, DQ_REASONS, DEFAULT_REGIONS, DOC_CATEGORIES } from "../lib/constants";
 import { Badge, StatCard, Modal, Field, InfoRow, Divider, RegionSelect, UserPicker, useAuth, useTheme } from "../components/ui";
 
@@ -43,14 +44,14 @@ export default function PointsPage({ users, setUsers, matches = [] }) {
   const visibleLedger = ledgerFilter==="all" ? matchLedger : matchLedger.filter(e=>e.roId===ledgerFilter);
 
   // Compute yearly point totals per user (for maintenance table)
-  const yearlyMap = React.useMemo(()=>{
+  const yearlyMap = useMemo(()=>{
     const map = {};
     users.forEach(u=>{ map[u.id] = computeYearlyPoints(u.id, matches); });
     return map;
   },[users, matches]);
 
   // All years that appear in the data
-  const allYears = React.useMemo(()=>{
+  const allYears = useMemo(()=>{
     const ys = new Set();
     Object.values(yearlyMap).forEach(byYear=>Object.keys(byYear).forEach(y=>ys.add(y)));
     return [...ys].sort((a,b)=>b.localeCompare(a));
@@ -99,7 +100,7 @@ export default function PointsPage({ users, setUsers, matches = [] }) {
                 {certifiedUsers.map((u,ri)=>{
                   const expanded = maintenanceId===u.id;
                   return (
-                    <React.Fragment key={u.id}>
+                    <Fragment key={u.id}>
                       <tr
                         style={{background:ri%2===0?"transparent":"var(--surface3)",cursor:"pointer"}}
                         onMouseEnter={e=>e.currentTarget.style.background="var(--surface)"}
@@ -168,7 +169,7 @@ export default function PointsPage({ users, setUsers, matches = [] }) {
                           </td>
                         </tr>
                       )}
-                    </React.Fragment>
+                    </Fragment>
                   );
                 })}
               </tbody>
