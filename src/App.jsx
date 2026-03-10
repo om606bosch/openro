@@ -15,6 +15,23 @@ import DocsPage     from "./pages/DocsPage";
 import PointsPage   from "./pages/PointsPage";
 import SeminarsPage from "./pages/SeminarsPage";
 
+class ErrorBoundary extends React.Component {
+  constructor(props) { super(props); this.state = { error: null }; }
+  static getDerivedStateFromError(error) { return { error }; }
+  render() {
+    if (this.state.error) return (
+      <div style={{padding:40,color:"#f87171",fontFamily:"monospace"}}>
+        <strong>Page error:</strong><br/><br/>
+        {this.state.error.message}<br/><br/>
+        <pre style={{fontSize:11,whiteSpace:"pre-wrap"}}>{this.state.error.stack}</pre>
+        <button onClick={()=>this.setState({error:null})} style={{marginTop:16,padding:"8px 16px",cursor:"pointer"}}>Dismiss</button>
+      </div>
+    );
+    return this.props.children;
+  }
+}
+
+
 const LS_KEYS = {
   users:"openro_users", matches:"openro_matches", seminars:"openro_seminars",
   applications:"openro_applications", clubs:"openro_clubs", docs:"openro_docs",
@@ -184,7 +201,7 @@ export default function App() {
           <div style={{flex:1}}/>
           <button onClick={()=>setTheme(t=>t==="dark"?"light":"dark")} style={{background:"none",border:"none",fontSize:18,cursor:"pointer"}}>{theme==="dark"?"🌙":"☀️"}</button>
         </div>
-        <main className="ro-main">
+        <main className="ro-main"><ErrorBoundary>
           {page==="dashboard"&&<Dashboard users={users} matches={matchesRaw} seminars={seminars}/>}
           {page==="ro"&&<ROPage users={users} matches={matchesRaw} regions={regions}/>}
           {page==="matches"&&<MatchesPage users={users} matches={matchesRaw} setMatches={setMatches} regions={regions} clubs={clubs}/>}
@@ -194,7 +211,7 @@ export default function App() {
           {page==="points"&&<PointsPage users={users} setUsers={setUsers} matches={matchesRaw}/>}
           {page==="users"&&canMatch&&<UserDatabase users={users} setUsers={setUsers} regions={regions} setRegions={setRegions} applications={applications} setApplications={setApplications} matches={matchesRaw}/>}
           {page==="profile"&&<MyProfile users={users} setUsers={setUsers} matches={matchesRaw} seminars={seminars} regions={regions} applications={applications} setApplications={setApplications} clubs={clubs} setClubs={setClubs}/>}
-        </main>
+        </ErrorBoundary></main>
       </div>
     </AuthCtx.Provider></ThemeCtx.Provider>
   );

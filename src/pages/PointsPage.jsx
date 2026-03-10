@@ -3,7 +3,7 @@ import { certColor, roleColor, statusColor, fmtDate, certRank, canManageMatches,
 import { CERT_LEVELS, SYSTEM_ROLES, MATCH_LEVEL_POINTS, SEMINAR_INSTRUCTOR_POINTS, POINT_RULES, IPSC_DISCIPLINES, DQ_REASONS, DEFAULT_REGIONS, DOC_CATEGORIES } from "../lib/constants";
 import { Badge, StatCard, Modal, Field, InfoRow, Divider, RegionSelect, UserPicker, useAuth, useTheme } from "../components/ui";
 
-export default function PointsPage({ users, setUsers, matches }) {
+export default function PointsPage({ users, setUsers, matches = [] }) {
   const { currentUser } = useAuth();
   const adminAccess = isAdmin(currentUser);
 
