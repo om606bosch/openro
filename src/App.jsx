@@ -126,9 +126,23 @@ export default function App() {
   return(
     <ThemeCtx.Provider value={theme}><AuthCtx.Provider value={{currentUser}}>
       <style>{cssVars}</style>
-      <style>{`${globalStyle}.ro-sidebar{display:flex;transition:transform 0.2s;}@media(max-width:700px){.ro-sidebar{transform:translateX(-100%);}.ro-sidebar.open{transform:translateX(0);}}`}</style>
+      <style>{`${globalStyle}
+        .ro-sidebar{display:flex;flex-direction:column;transition:transform 0.25s ease;position:fixed;top:0;left:0;bottom:0;width:228px;background:var(--surface);border-right:1px solid var(--border);z-index:200;}
+        .mobile-topbar{display:none;}
+        .mobile-close{display:none;}
+        .ro-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.5);z-index:199;}
+        .ro-main{margin-left:228px;width:calc(100% - 228px);min-height:100vh;background:var(--bg);padding:28px clamp(16px,2.5vw,40px);box-sizing:border-box;overflow-x:hidden;}
+        @media(max-width:700px){
+          .ro-sidebar{transform:translateX(-100%);}
+          .ro-sidebar.open{transform:translateX(0);}
+          .ro-overlay.open{display:block;}
+          .mobile-topbar{display:flex !important;}
+          .mobile-close{display:block !important;}
+          .ro-main{margin-left:0 !important;width:100% !important;padding-top:68px !important;}
+        }
+      `}</style>
       <div style={{display:"flex",minHeight:"100vh",background:"var(--bg)"}}>
-        <aside className={`ro-sidebar${menuOpen?" open":""}`} style={{width:228,background:"var(--surface)",borderRight:"1px solid var(--border)",flexDirection:"column",position:"fixed",top:0,left:0,bottom:0,zIndex:100}}>
+        <aside className={`ro-sidebar${menuOpen?" open":""}`}>
           <div style={{padding:"18px 20px 14px",borderBottom:"1px solid var(--border)",display:"flex",alignItems:"center",justifyContent:"space-between"}}>
             <div style={{display:"flex",alignItems:"center",gap:10}}>
               <div style={{width:36,height:36,borderRadius:8,background:"#e85d2c",display:"flex",alignItems:"center",justifyContent:"center",fontSize:18}}>🎯</div>
@@ -137,7 +151,7 @@ export default function App() {
                 <div style={{fontSize:10,color:"var(--text-muted)",textTransform:"uppercase",letterSpacing:"0.08em"}}>Range Officer Manager</div>
               </div>
             </div>
-            <button onClick={()=>setMenuOpen(false)} style={{background:"none",border:"none",color:"var(--text-muted)",cursor:"pointer",fontSize:18,display:"none"}} className="mobile-close">×</button>
+            <button onClick={()=>setMenuOpen(false)} style={{background:"none",border:"none",color:"var(--text-muted)",cursor:"pointer",fontSize:18}} className="mobile-close">×</button>
           </div>
           <nav style={{flex:1,overflowY:"auto",padding:"10px 0"}}>
             {NAV.map(n=>(
@@ -163,13 +177,14 @@ export default function App() {
             <button onClick={logout} style={{width:"100%",background:"var(--surface2)",border:"1px solid var(--border2)",borderRadius:6,color:"var(--text-muted)",padding:"7px",fontSize:12,cursor:"pointer",fontWeight:600}}>Sign Out</button>
           </div>
         </aside>
-        <div style={{display:"none",position:"fixed",top:0,left:0,right:0,height:52,background:"var(--surface)",borderBottom:"1px solid var(--border)",zIndex:99,alignItems:"center",padding:"0 14px",gap:12}} className="mobile-topbar">
+        <div className={`ro-overlay${menuOpen?" open":""}`} onClick={()=>setMenuOpen(false)} />
+        <div style={{position:"fixed",top:0,left:0,right:0,height:52,background:"var(--surface)",borderBottom:"1px solid var(--border)",zIndex:99,alignItems:"center",padding:"0 14px",gap:12}} className="mobile-topbar">
           <button onClick={()=>setMenuOpen(o=>!o)} style={{background:"none",border:"none",color:"var(--text-primary)",fontSize:22,cursor:"pointer",padding:4}}>☰</button>
           <div style={{fontWeight:800,fontSize:16,color:"var(--text-primary)",fontFamily:"'Barlow Condensed',sans-serif",letterSpacing:"0.06em"}}>OpenRO</div>
           <div style={{flex:1}}/>
           <button onClick={()=>setTheme(t=>t==="dark"?"light":"dark")} style={{background:"none",border:"none",fontSize:18,cursor:"pointer"}}>{theme==="dark"?"🌙":"☀️"}</button>
         </div>
-        <main style={{marginLeft:228,width:"calc(100% - 228px)",minHeight:"100vh",background:"var(--bg)",padding:"28px clamp(16px,2.5vw,40px)",boxSizing:"border-box",overflowX:"hidden"}}>
+        <main className="ro-main">
           {page==="dashboard"&&<Dashboard users={users} matches={matchesRaw} seminars={seminars}/>}
           {page==="ro"&&<ROPage users={users} matches={matchesRaw} regions={regions}/>}
           {page==="matches"&&<MatchesPage users={users} matches={matchesRaw} setMatches={setMatches} regions={regions} clubs={clubs}/>}
